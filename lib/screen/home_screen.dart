@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 // statefulWidget 은 statelessWidget 과 다르게 context 를 어디서든 가져와서 활용할 수 있다.
 class HomeScreen extends StatefulWidget {
@@ -10,10 +10,19 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+  XFile? video;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: renderEmpty(),
+      body: video == null ? renderEmpty() : renderVideo(),
+    );
+  }
+
+  Widget renderVideo() {
+    return Center(
+      child: Text("Video"),
     );
   }
 
@@ -24,16 +33,31 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: getBoxDecoration(),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          _Logo(),
+        children: [
+          _Logo(
+            onTap: onLogoTap,
+          ),
           // SizedBox 를 사용하는 이유 ?? : 패딩을 사용하면 한번 감싸기 때문에 탭(뎁스)가 하나 더 들어가야 하는데 SizedBox 를 활용해도 좋다.
-          SizedBox(
+          const SizedBox(
             height: 30.0,
           ),
-          _AppName()
+          const _AppName()
         ],
       ),
     );
+  }
+
+  void onLogoTap() async {
+    final video = await ImagePicker().pickVideo(
+        source: ImageSource.gallery,
+    );
+
+    if(video != null ) {
+      setState(() {
+        // 여기서 this 는 statefulWidget 을 가리킨다.
+        this.video = video;
+      });
+    }
   }
 
   BoxDecoration getBoxDecoration() {
@@ -50,11 +74,14 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class _Logo extends StatelessWidget {
-  const _Logo({Key? key}) : super(key: key);
+  final VoidCallback onTap;
+
+  const _Logo({required this.onTap, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Image.asset("asset/image/logo.png");
+    return GestureDetector(
+        onTap: onTap, child: Image.asset("asset/image/logo.png"));
   }
 }
 
