@@ -62,10 +62,13 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
 
   void onReversePressed() {
     final currentPosition = videoPlayerController!.value.position;
-    final position = currentPosition - const Duration(seconds: 3);
-    
+
+    Duration position = const Duration();
+
+    if (currentPosition.inSeconds > 3) {
+      position = currentPosition - const Duration(seconds: 3);
+    }
     videoPlayerController!.seekTo(position);
-    
   }
 
   // 이미 실행중이면 중지
@@ -79,24 +82,41 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
       }
     });
   }
+
+  void onForwardPressed() {
+    // 전체 길이 가져오기
+    final maxPosition = videoPlayerController!.value.duration;
+    final currentPosition = videoPlayerController!.value.position;
+
+    Duration position = maxPosition;
+
+    if ((maxPosition - const Duration(seconds: 3)).inSeconds >
+        currentPosition.inSeconds) {
+      position = currentPosition + const Duration(seconds: 3);
+    }
+    videoPlayerController!.seekTo(position);
+
+    if (position == maxPosition) {
+      setState(() {
+        videoPlayerController!.pause();
+      });
+    }
+  }
 }
 
-  void onForwardPressed() {}
-
-
 class _Controls extends StatelessWidget {
-
   final VoidCallback onReversePressed;
   final VoidCallback onPlayPressed;
   final VoidCallback onForwardPressed;
   final bool isPlaying;
 
-  const _Controls({
-    required this.onForwardPressed,
-    required this.onPlayPressed,
-    required this.onReversePressed,
-    required this.isPlaying,
-    Key? key}) : super(key: key);
+  const _Controls(
+      {required this.onForwardPressed,
+      required this.onPlayPressed,
+      required this.onReversePressed,
+      required this.isPlaying,
+      Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +130,8 @@ class _Controls extends StatelessWidget {
           renderIconButton(
               onPressed: onReversePressed, iconData: Icons.rotate_left),
           renderIconButton(
-              onPressed: onPlayPressed, iconData: isPlaying ? Icons.pause : Icons.play_arrow),
+              onPressed: onPlayPressed,
+              iconData: isPlaying ? Icons.pause : Icons.play_arrow),
           renderIconButton(
               onPressed: onForwardPressed, iconData: Icons.rotate_right),
         ],
@@ -118,10 +139,8 @@ class _Controls extends StatelessWidget {
     );
   }
 
-  Widget renderIconButton({
-    required VoidCallback onPressed,
-    required IconData iconData
-  }) {
+  Widget renderIconButton(
+      {required VoidCallback onPressed, required IconData iconData}) {
     return IconButton(
         onPressed: onPressed,
         iconSize: 30.0,
