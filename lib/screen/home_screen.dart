@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:video_practice_app/component/custom_video_player.dart';
 
 // statefulWidget 은 statelessWidget 과 다르게 context 를 어디서든 가져와서 활용할 수 있다.
 class HomeScreen extends StatefulWidget {
@@ -10,7 +11,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   XFile? video;
 
   @override
@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget renderVideo() {
     return Center(
-      child: Text("Video"),
+      child: CustomVideoPlayer(videoFile: video!),
     );
   }
 
@@ -47,12 +47,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // 파일 선택 후 파일 객체에 선택한 파일 저장
   void onLogoTap() async {
     final video = await ImagePicker().pickVideo(
-        source: ImageSource.gallery,
+      source: ImageSource.gallery,
     );
 
-    if(video != null ) {
+    if (video != null) {
       setState(() {
         // 여기서 this 는 statefulWidget 을 가리킨다.
         this.video = video;
