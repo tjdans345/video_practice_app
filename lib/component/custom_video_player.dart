@@ -88,6 +88,7 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
     final maxPosition = videoPlayerController!.value.duration;
     final currentPosition = videoPlayerController!.value.position;
 
+    // maxPosition 정의
     Duration position = maxPosition;
 
     if ((maxPosition - const Duration(seconds: 3)).inSeconds >
